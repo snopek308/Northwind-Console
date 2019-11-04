@@ -48,7 +48,20 @@ namespace NorthwindConsole
 
                         // save category to db
                         var db = new NorthwindContext();
-                        db.AddCategory(category);
+                        //db.AddCategory(category);
+                        db.Categories.Add(category);
+
+                        foreach (var validationResult in db.GetValidationErrors())
+                        {
+                            foreach (var error in validationResult.ValidationErrors)
+                            {
+                                logger.Error(
+                                    "Entity Property: {0}, Error {1}",
+                                    error.PropertyName,
+                                    error.ErrorMessage);
+                            }
+                        }
+
 
                         //ValidationContext context = new ValidationContext(category, null, null);
                         //List<ValidationResult> results = new List<ValidationResult>();

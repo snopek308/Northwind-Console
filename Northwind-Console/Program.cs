@@ -23,6 +23,8 @@ namespace NorthwindConsole
                     Console.WriteLine("2) Add Category");
                     Console.WriteLine("3) Display Category and related products");
                     Console.WriteLine("4) Display all Categories and their related products");
+                    Console.WriteLine("5) Edit Category Name");
+                    Console.WriteLine("6) Delete Category");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
                     Console.Clear();
@@ -47,56 +49,17 @@ namespace NorthwindConsole
                         category.Description = Console.ReadLine();
 
                         // save category to db
-                        var db = new NorthwindContext();
-                        //db.AddCategory(category);
-                        db.Categories.Add(category);
-
-                        foreach (var validationResult in db.GetValidationErrors())
+                        using (var db = new NorthwindContext())
                         {
-                            foreach (var error in validationResult.ValidationErrors)
-                            {
-                                logger.Error(
-                                    "Entity Property: {0}, Error {1}",
-                                    error.PropertyName,
-                                    error.ErrorMessage);
-                            }
+                            db.AddCategory(category);
                         }
-
-
-                        //ValidationContext context = new ValidationContext(category, null, null);
-                        //List<ValidationResult> results = new List<ValidationResult>();
-
-                        //var isValid = Validator.TryValidateObject(category, context, results, true);
-                        //if (isValid)
-                        //{
-                        //    var db = new NorthwindContext();
-                        //    // check for unique name
-                        //    if (db.Categories.Any(c => c.CategoryName == category.CategoryName))
-                        //    {
-                        //        // generate validation error
-                        //        isValid = false;
-                        //        results.Add(new ValidationResult("Name exists", new string[] { "CategoryName" }));
-                        //    }
-                        //    else
-                        //    {
-                        //        logger.Info("Validation passed");
-                        //        // TODO: save category to db
-                        //    }
-                        //}
-                        //if (!isValid)
-                        //{
-                        //    foreach (var result in results)
-                        //    {
-                        //        logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
-                        //    }
-                        //}
                     }
                     else if (choice == "3")
                     {
                         var db = new NorthwindContext();
                         var query = db.Categories.OrderBy(p => p.CategoryId);
 
-                        Console.WriteLine("Select the category whose products you want to display:");
+                        Console.WriteLine("Select the category ID whose products you want to display:");
                         foreach (var item in query)
                         {
                             Console.WriteLine($"{item.CategoryId}) {item.CategoryName}");
@@ -124,6 +87,49 @@ namespace NorthwindConsole
                                 Console.WriteLine($"\t{p.ProductName}");
                             }
                         }
+                    }
+                    else if (choice == "5")
+                    {
+                        var db = new NorthwindContext();
+                        var query = db.Categories.OrderBy(p => p.CategoryId);
+
+                        Console.WriteLine("Select the category ID you want to edit:");
+                        foreach (var item in query)
+                        {
+                            Console.WriteLine($"{item.CategoryId}) {item.CategoryName}");
+                        }
+                        int id = int.Parse(Console.ReadLine());
+                        Console.Clear();
+                        logger.Info($"CategoryId {id} selected");
+                        Category category = db.Categories.FirstOrDefault(c => c.CategoryId == id);
+
+                        Console.WriteLine("Enter the new category name:");
+                        var name = Console.ReadLine();
+                        logger.Info($"Category Name {name} entered");
+
+                        category.CategoryName = name;
+                        db.SaveChanges();
+                        logger.Info($"Category Name {name} updated");
+
+                    }
+                    else if (choice == "6")
+                    {
+                        var db = new NorthwindContext();
+                        var query = db.Categories.OrderBy(p => p.CategoryId);
+
+                        Console.WriteLine("Select the category ID you want to delete:");
+                        foreach (var item in query)
+                        {
+                            Console.WriteLine($"{item.CategoryId}) {item.CategoryName}");
+                        }
+                        int id = int.Parse(Console.ReadLine());
+                        Console.Clear();
+                        logger.Info($"CategoryId {id} selected");
+                        Category category = db.Categories.FirstOrDefault(c => c.CategoryId == id);
+
+                        db.Categories.Remove(category);
+                        db.SaveChanges();
+                        logger.Info($"Category Id {id} deleted");
                     }
 
                     Console.WriteLine();

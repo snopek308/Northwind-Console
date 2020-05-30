@@ -1,5 +1,7 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace NorthwindConsole.Models
 {
@@ -30,5 +32,29 @@ namespace NorthwindConsole.Models
 
         public virtual Category Category { get; set; }
         public virtual Supplier Supplier { get; set; }
+
+
+        //Case 12
+        public static Product GetProduct(NorthwindContext db, Logger logger)
+        {
+            var products = db.Products.OrderBy(c => c.ProductID);
+
+            foreach (Product p in products)
+            {
+                Console.WriteLine($"ID:{p.CategoryId}) {p.ProductName}");
+            }
+
+            if (int.TryParse(Console.ReadLine(), out int ProductID))
+            {
+                Product product = db.Products.FirstOrDefault(p => p.ProductID == ProductID);
+                if (product != null)
+                {
+                    return product;
+                }
+            }
+            logger.Error("Invalid Product ID");
+            return null;
+        }
+
     }
 }

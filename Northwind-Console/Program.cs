@@ -19,18 +19,18 @@ namespace NorthwindConsole
                 do
                 {
                     Console.Clear();
-                    Console.WriteLine("1) Add Product");
+                    Console.WriteLine("1) Add a Product");
                     Console.WriteLine("2) Display all Products");
                     Console.WriteLine("3) Display Active Products");
                     Console.WriteLine("4) Display Discontinued Products");
                     Console.WriteLine("5) Search Products");
-                    Console.WriteLine("6) Add Category");
-                    Console.WriteLine("7) Edit Category");
+                    Console.WriteLine("6) Add a Category");
+                    Console.WriteLine("7) Edit a Category");
                     Console.WriteLine("8) Display all Categories");
-                    Console.WriteLine("9) Display all non-discontinued items by Category");
-                    Console.WriteLine("10) Display all non-discontinued items by speciic Category");
-                    Console.WriteLine("11) Delete Category");
-                    Console.WriteLine("12) Delete Product");
+                    Console.WriteLine("9) Display all non-discontinued items by a Category");
+                    Console.WriteLine("10) Display all non-discontinued items by a specific Category");
+                    Console.WriteLine("11) Delete a Category");
+                    Console.WriteLine("12) Delete a Product");
                     Console.WriteLine("\"q\" to quit");
                     choice = Console.ReadLine();
 
@@ -64,122 +64,91 @@ namespace NorthwindConsole
                         //add category
                         case "6":
                             {
+                                Category.addCategories(logger);
                                 break;
                             }
                         //edit category
                         case "7":
                             {
+                                var db = new NorthwindContext();
+                                Console.WriteLine("Choose category ID to edit: ");
+                                var category = Category.GetCategory(db, logger);
+
+                                if (category != null)
+                                {
+                                    Category UpdatedCategory = Category.InputCategory(db, logger);
+
+                                    if (UpdatedCategory != null)
+                                    {
+                                        UpdatedCategory.CategoryId = category.CategoryId;
+                                        db.EditCategory(UpdatedCategory);
+                                        logger.Info($"Category Id: {UpdatedCategory.CategoryId} updated");
+                                    }
+                                }
+                                Console.WriteLine();
+                                Console.WriteLine("Press any key to return to the Menu");
+                                Console.ReadLine();
                                 break;
                             }
                         //display all categories
                         case "8":
                             {
+                                Category.displayAllCategories(logger);
                                 break;
                             }
                         //display all non-discontinued items by Category
                         case "9":
                             {
+                                Category.displayAllCategoriesProductsNotDiscontinued(logger);
                                 break;
                             }
-                        //display all non-discontinued items by speciic Category
+                        //display all non-discontinued items by specific Category
                         case "10":
                             {
+                                Category.displaySpecificCategoryProducts(logger);
                                 break;
                             }
                         //delete a category
                         case "11":
                             {
+                                var db = new NorthwindContext();
+                                Console.WriteLine("Select category ID to delete:");
+                                var categoryToDelete = Category.GetCategory(db, logger);
+                                try
+                                {
+                                    db.deleteCategory(categoryToDelete);
+                                    logger.Info($"{categoryToDelete.CategoryName} deleted");
+                                }
+                                catch (Exception)
+                                {
+                                    logger.Error("Cannot Delete a record that affects other tables");
+                                }
+                                Console.WriteLine();
+                                Console.WriteLine("Press any key to return to the Menu");
+                                Console.ReadLine();
                                 break;
                             }
                         //delete a product
                         case "12":
                             {
+                                var db = new NorthwindContext();
+                                Console.WriteLine("Select product ID to delete:");
+                                var productToDelete = Product.GetProduct(db, logger);
+                                try
+                                {
+                                    db.deleteProduct(productToDelete);
+                                    logger.Info($"{productToDelete.ProductName} deleted");
+                                }
+                                catch (Exception)
+                                {
+                                    logger.Error("Cannot Delete a record that will affect other tables");
+                                }
+                                Console.WriteLine();
+                                Console.WriteLine("Press any key to return to the Menu");
+                                Console.ReadLine();
                                 break;
                             }
-
                     }
-
-                    //logger.Info($"Option {choice} selected");
-                    //if (choice == "1")
-                    //{
-                    //    var db = new NorthwindContext();
-                    //    var query = db.Categories.OrderBy(p => p.CategoryName);
-
-                    //    Console.WriteLine($"{query.Count()} records returned");
-                    //    foreach (var item in query)
-                    //    {
-                    //        Console.WriteLine($"{item.CategoryName} - {item.Description}");
-                    //    }
-                    //} 
-                    //else if (choice == "2")
-                    //{
-                    //    Category category = new Category();
-                    //    Console.WriteLine("Enter Category Name:");
-                    //    category.CategoryName = Console.ReadLine();
-                    //    Console.WriteLine("Enter the Category Description:");
-                    //    category.Description = Console.ReadLine();
-
-                    //    ValidationContext context = new ValidationContext(category, null, null);
-                    //    List<ValidationResult> results = new List<ValidationResult>();
-
-                    //    var isValid = Validator.TryValidateObject(category, context, results, true);
-                    //    if (isValid)
-                    //    {
-                    //        var db = new NorthwindContext();
-                    //        // check for unique name
-                    //        if (db.Categories.Any(c => c.CategoryName == category.CategoryName))
-                    //        {
-                    //            // generate validation error
-                    //            isValid = false;
-                    //            results.Add(new ValidationResult("Name exists", new string[] { "CategoryName" }));
-                    //        }
-                    //        else
-                    //        {
-                    //            logger.Info("Validation passed");
-                    //            // TODO: save category to db
-                    //        }
-                    //    }
-                    //    if (!isValid)
-                    //    {
-                    //        foreach (var result in results)
-                    //        {
-                    //            logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
-                    //        }
-                    //    }
-                    //} else if (choice == "3")
-                    //{
-                    //    var db = new NorthwindContext();
-                    //    var query = db.Categories.OrderBy(p => p.CategoryId);
-
-                    //    Console.WriteLine("Select the category whose products you want to display:");
-                    //    foreach (var item in query)
-                    //    {
-                    //        Console.WriteLine($"{item.CategoryId}) {item.CategoryName}");
-                    //    }
-                    //    int id = int.Parse(Console.ReadLine());
-                    //    Console.Clear();
-                    //    logger.Info($"CategoryId {id} selected");
-                    //    Category category = db.Categories.FirstOrDefault(c => c.CategoryId == id);
-                    //    Console.WriteLine($"{category.CategoryName} - {category.Description}");
-                    //    foreach(Product p in category.Products)
-                    //    {
-                    //        Console.WriteLine(p.ProductName);
-                    //    }
-                    //}
-                    //else if (choice == "4")
-                    //{
-                    //    var db = new NorthwindContext();
-                    //    var query = db.Categories.Include("Products").OrderBy(p => p.CategoryId);
-                    //    foreach(var item in query)
-                    //    {
-                    //        Console.WriteLine($"{item.CategoryName}");
-                    //        foreach(Product p in item.Products)
-                    //        {
-                    //            Console.WriteLine($"\t{p.ProductName}");
-                    //        }
-                    //    }
-                    //}
-                    //Console.WriteLine();
 
                 } while (choice.ToLower() != "q");
             }

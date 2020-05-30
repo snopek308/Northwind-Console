@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NLog;
 using NorthwindConsole.Models;
+using System.Drawing;
+using Console = Colorful.Console;
 
 namespace NorthwindConsole
 {
@@ -95,7 +97,7 @@ namespace NorthwindConsole
                                     }
                                 }
                                 Console.WriteLine();
-                                Console.WriteLine("Press any key to return to the Menu");
+                                Console.WriteLine("Press any key to return to the Menu", Color.Red);
                                 Console.ReadLine();
                                 break;
                             }
@@ -133,7 +135,7 @@ namespace NorthwindConsole
                                     logger.Error("Cannot Delete a record that affects other tables");
                                 }
                                 Console.WriteLine();
-                                Console.WriteLine("Press any key to return to the Menu");
+                                Console.WriteLine("Press any key to return to the Menu", Color.Red);
                                 Console.ReadLine();
                                 break;
                             }
@@ -153,7 +155,7 @@ namespace NorthwindConsole
                                     logger.Error("Cannot Delete a record that will affect other tables");
                                 }
                                 Console.WriteLine();
-                                Console.WriteLine("Press any key to return to the Menu");
+                                Console.WriteLine("Press any key to return to the Menu", Color.Red);
                                 Console.ReadLine();
                                 break;
                             }
@@ -169,3 +171,8 @@ namespace NorthwindConsole
         }
     }
 }
+
+//How to add color to the Console
+//Must install the extension Colorful Consoles for it to work
+//Must have: using System.Drawing; and using Console = Colorful.Console; at the top
+//http://colorfulconsole.com/

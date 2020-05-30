@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Drawing;
+using Console = Colorful.Console;
 
 namespace NorthwindConsole.Models
 {
@@ -29,7 +31,6 @@ namespace NorthwindConsole.Models
 
             Console.WriteLine("Enter Category Name: ");
             category.CategoryName = Console.ReadLine();
-
             Console.WriteLine("Enter Description: ");
             category.Description = Console.ReadLine();
 
@@ -58,7 +59,7 @@ namespace NorthwindConsole.Models
                 }
             }
             Console.WriteLine();
-            Console.WriteLine("Press any key to return to the Menu");
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
             Console.ReadLine();
         }
 
@@ -66,7 +67,6 @@ namespace NorthwindConsole.Models
         public static Category GetCategory(NorthwindContext db, Logger logger)
         {
             var categories = db.Categories.OrderBy(c => c.CategoryId);
-
             foreach (Category c in categories)
             {
                 Console.WriteLine($"ID:{c.CategoryId}) {c.CategoryName}");
@@ -88,7 +88,7 @@ namespace NorthwindConsole.Models
             Category category = new Category();
             Console.WriteLine("Enter Category Name: ");
             category.CategoryName = Console.ReadLine();
-            Console.WriteLine("Enter description: ");
+            Console.WriteLine("Enter Description: ");
             category.Description = Console.ReadLine();
 
             if (category.CategoryName != null && category.Description != null)
@@ -109,18 +109,17 @@ namespace NorthwindConsole.Models
             logger.Info("Choice: Display All Categories");
             Console.WriteLine();
             var db = new NorthwindContext();
-
             var categories = db.Categories.OrderBy(c => c.CategoryId);
 
             foreach (var item in categories)
             {
                 Console.WriteLine($"Name: {item.CategoryName}");
                 Console.WriteLine($"Description: {item.Description}");
-                Console.WriteLine("=========================");
+                Console.WriteLine();
             }
 
             Console.WriteLine();
-            Console.WriteLine("Press any key to return to the Menu");
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
             Console.ReadLine();
         }
 
@@ -151,7 +150,7 @@ namespace NorthwindConsole.Models
 
             logger.Info(categories.Count());
             Console.WriteLine();
-            Console.WriteLine("Press any key to return to the Menu");
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
             Console.ReadLine();
         }
 
@@ -184,9 +183,9 @@ namespace NorthwindConsole.Models
                     logger.Info($"({specificCategory.Count()}) results returned");
                     Console.WriteLine();
 
-                    foreach (var cat in specificCategory)
+                    foreach (var c in specificCategory)
                     {
-                        Console.WriteLine($"{cat.CategoryName}, {cat.ProductName}");
+                        Console.WriteLine($"{c.CategoryName}, {c.ProductName}");
                     }
                 }else
                 {
@@ -197,7 +196,7 @@ namespace NorthwindConsole.Models
                 logger.Error("Not a valid entry");
             }
             Console.WriteLine();
-            Console.WriteLine("Press any key to return to the Menu");
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
             Console.ReadLine();
 
         }

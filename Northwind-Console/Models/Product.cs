@@ -1,7 +1,10 @@
 ﻿using NLog;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Drawing;
+using Console = Colorful.Console;
 
 namespace NorthwindConsole.Models
 {
@@ -33,12 +36,202 @@ namespace NorthwindConsole.Models
         public virtual Category Category { get; set; }
         public virtual Supplier Supplier { get; set; }
 
+        //Case 1
+        public static void addProducts(Logger logger)
+        {
+            var db = new NorthwindContext();
+            Product product = new Product();
+            logger.Info("Choice: Add new Product");
+            
+            Console.WriteLine("Enter the Product name: ");
+            product.ProductName = Console.ReadLine().ToLower();
+            Console.WriteLine("Enter the Quantity per Unit: ");
+            product.QuantityPerUnit = Console.ReadLine();
+            Console.WriteLine("Enter the Unit Price: ");
+            Decimal unitPrice = Decimal.Parse(Console.ReadLine());
+            product.UnitPrice = unitPrice;
+            Console.WriteLine("Enter the Units in Stock: ");
+            Int16 unitsInStock = Int16.Parse(Console.ReadLine());
+            product.UnitsInStock = unitsInStock;
+            Console.WriteLine("Enter the Units on Order: ");
+            Int16 unitsOnOrder = Int16.Parse(Console.ReadLine());
+            product.UnitsOnOrder = unitsOnOrder;
+            Console.WriteLine("Enter the reorder level: ");
+            Int16 reorderLevel = Int16.Parse(Console.ReadLine());
+            product.ReorderLevel = reorderLevel;
+            Console.WriteLine("Enter if Discontinued Y/N");
+            string discontinuedProduct = Console.ReadLine().ToLower();
+            bool discontinued;
+
+            if (discontinuedProduct != null && discontinuedProduct.Equals("y") || discontinuedProduct.Equals("n"))
+            {
+                if (discontinuedProduct.Equals("y"))
+                {
+                    discontinued = true;
+                    product.Discontinued = discontinued;
+                }
+                else if (discontinuedProduct.Equals("n"))
+                {
+                    discontinued = false;
+                    product.Discontinued = discontinued;
+                }
+
+                Console.WriteLine("Enter Category Name: ");
+                var categoryName = Console.ReadLine().ToLower();
+                var categoryQuery = db.Categories.Where(c => c.CategoryName.Equals(categoryName));
+                var categoryID = 0;
+
+                foreach (var ca in categoryQuery)
+                {
+                    categoryID = ca.CategoryId;
+                }
+
+                product.CategoryId = categoryID;
+                Console.WriteLine("Enter Supplier name: ");
+                var supplierName = Console.ReadLine();
+                var supplierQuery = db.Suppliers.Where(s => s.CompanyName.Equals(supplierName));
+                var supplierID = 0;
+
+                foreach (var s in supplierQuery)
+                {
+                    supplierID = s.SupplierId;
+                }
+
+                product.SupplierId = supplierID;
+
+                ValidationContext context = new ValidationContext(product, null, null);
+                List<ValidationResult> results = new List<ValidationResult>();
+                var isValid = Validator.TryValidateObject(product, context, results, true);
+
+                //This if/else is if the var isProductValid = true;
+                if (db.Products.Any(p => p.ProductName.ToLower() == product.ProductName))
+                {
+                    //and if isProductValid = false;
+                    isValid = false;
+                    results.Add(new ValidationResult("Product already exists", new string[] { product.ProductName }));
+                }
+
+                if (isValid)
+                {
+                    logger.Info("Validation Passed");
+                    db.addProduct(product);
+                    logger.Info($"Product {product.ProductName} added");
+                }
+                else if (!isValid)
+                {
+                    foreach (var result in results)
+                    {
+                        logger.Error($"{result.MemberNames.First()} : {result.ErrorMessage}");
+                    }
+
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
+            Console.ReadLine();
+        }
+
+        //Case 2
+        public static void displayAllProducts(Logger logger)
+        {
+            logger.Info("Choice: Display all Products");
+            var db = new NorthwindContext();
+            var queryProduct = db.Products.OrderBy(p => p.ProductID);
+            logger.Info(queryProduct.Count());
+            foreach (var p in queryProduct)
+            {
+                Console.WriteLine($"{p.ProductName}");
+            }
+            Console.WriteLine();
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
+            Console.ReadLine();
+        }
+
+        //Case 3
+        public static void displayActiveProducts(Logger logger)
+        {
+            logger.Info("Choice: Display Active Products");
+            var db = new NorthwindContext();
+
+            Console.WriteLine("All Active Products:");
+
+            var ProductQuery = db.Products.Where(p => p.Discontinued == false);
+            foreach (var p in ProductQuery)
+            {
+                Console.WriteLine($"{p.ProductName}");
+            }
+            Console.WriteLine();
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
+            Console.ReadLine();
+        }
+
+        //Case 4
+        public static void displayDiscontinuedProducts(Logger logger)
+        {
+            logger.Info("Choice: Display Discontinued Products");
+            var db = new NorthwindContext();
+
+            Console.WriteLine("Discontinued Products:");
+
+            var ProductQuery = db.Products.Where(p => p.Discontinued == true);
+            foreach (var p in ProductQuery)
+            {
+                Console.WriteLine($"{p.ProductName}");
+            }
+            Console.WriteLine();
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
+            Console.ReadLine();
+        }
+
+        //Case 5
+        public static void searchProducts(Logger logger)
+        {
+            logger.Info("Choice: Search Products");
+            var db = new NorthwindContext();
+            Console.WriteLine("Enter a Product name: ");
+            string name = Console.ReadLine().ToLower();
+            logger.Info($"User search for {name.ToUpper()}");
+
+            var ProductSearch = db.Products.Where(p => p.ProductName.Equals(name));
+            if (ProductSearch.Any())
+            {
+                Console.WriteLine($"Search Results for {name.ToUpper()}");
+                foreach (var p in ProductSearch)
+                {
+                    Console.WriteLine($"Product ID: {p.ProductID}");
+                    Console.WriteLine($"Supplier ID: {p.SupplierId}");
+                    Console.WriteLine($"Category ID: {p.CategoryId}");
+                    Console.WriteLine($"Quantity Per Unit: {p.QuantityPerUnit}");
+                    Console.WriteLine($"Unit Price: {p.UnitPrice}");
+                    Console.WriteLine($"Units In Stock: {p.UnitsInStock}");
+                    Console.WriteLine($"Units On Order: {p.UnitsOnOrder}");
+                    Console.WriteLine($"Reorder Level: {p.ReorderLevel}");
+
+                    if (p.Discontinued == false)
+                    {
+                        Console.WriteLine("Discontinued: No");
+                    }
+                    else if (p.Discontinued == true)
+                    {
+                        Console.WriteLine("Discontinued: Yes");
+                    }
+                    Console.WriteLine();
+                }
+            }
+            else
+            {
+                Console.WriteLine($"There were {ProductSearch.Count()} products that matched \"{name.ToUpper()}\"");
+            }
+            Console.WriteLine();
+            Console.WriteLine("Press any key to return to the Menu", Color.Red);
+            Console.ReadLine();
+        }
 
         //Case 12
-        public static Product GetProduct(NorthwindContext db, Logger logger)
+        public static Product getProduct(NorthwindContext db, Logger logger)
         {
             var products = db.Products.OrderBy(c => c.ProductID);
-
             foreach (Product p in products)
             {
                 Console.WriteLine($"ID:{p.CategoryId}) {p.ProductName}");

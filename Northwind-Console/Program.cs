@@ -18,17 +18,21 @@ namespace NorthwindConsole
                 string choice;
                 do
                 {
+                    //Sorry Mark, I prefer the switch over an if/else statement, hope you don't mind I changed it up.
                     Console.Clear();
+                    //For a "C" Grade
                     Console.WriteLine("1) Add a Product");
                     Console.WriteLine("2) Display all Products");
                     Console.WriteLine("3) Display Active Products");
                     Console.WriteLine("4) Display Discontinued Products");
                     Console.WriteLine("5) Search Products");
+                    //For a "B" Grade
                     Console.WriteLine("6) Add a Category");
                     Console.WriteLine("7) Edit a Category");
                     Console.WriteLine("8) Display all Categories");
                     Console.WriteLine("9) Display all non-discontinued items by a Category");
                     Console.WriteLine("10) Display all non-discontinued items by a specific Category");
+                    //For an "A" Grade
                     Console.WriteLine("11) Delete a Category");
                     Console.WriteLine("12) Delete a Product");
                     Console.WriteLine("\"q\" to quit");
@@ -39,26 +43,31 @@ namespace NorthwindConsole
                         //add product
                         case "1":
                             {
+                                Product.addProducts(logger);
                                 break;
                             }
                         //display products
                         case "2":
                             {
+                                Product.displayAllProducts(logger);
                                 break;
                             }
                         //display active products
                         case "3":
                             {
+                                Product.displayActiveProducts(logger);
                                 break;
                             }
                         //display discountinued products
                         case "4":
                             {
+                                Product.displayDiscontinuedProducts(logger);
                                 break;
                             }
                         //search products
                         case "5":
                             {
+                                Product.searchProducts(logger);
                                 break;
                             }
                         //add category
@@ -133,7 +142,7 @@ namespace NorthwindConsole
                             {
                                 var db = new NorthwindContext();
                                 Console.WriteLine("Select product ID to delete:");
-                                var productToDelete = Product.GetProduct(db, logger);
+                                var productToDelete = Product.getProduct(db, logger);
                                 try
                                 {
                                     db.deleteProduct(productToDelete);

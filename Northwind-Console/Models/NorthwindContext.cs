@@ -23,6 +23,13 @@ namespace NorthwindConsole.Models
             this.SaveChanges();
         }
 
+        //C-Create Products
+        public void addProduct(Product product)
+        {
+            this.Products.Add(product);
+            this.SaveChanges();
+        }
+
         //U-Update Categories
         public void EditCategory(Category UpdatedCategory)
         {

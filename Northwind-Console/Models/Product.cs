@@ -157,6 +157,42 @@ namespace NorthwindConsole.Models
         }
 
         //Case 3
+        public static Product EditProduct(NorthwindContext db, Logger logger)
+        {
+            //This method is entering the new information in for the Category and the Description for the Category
+            Product product = new Product();
+            Console.WriteLine("Enter Product Name: ");
+            product.ProductName = Console.ReadLine();
+            Console.WriteLine("Enter the Quantity per Unit: ");
+            product.QuantityPerUnit = Console.ReadLine();
+            Console.WriteLine("Enter the Unit Price: ");
+            Decimal unitPrice = Decimal.Parse(Console.ReadLine());
+            product.UnitPrice = unitPrice;
+            Console.WriteLine("Enter the Units in Stock: ");
+            Int16 unitsInStock = Int16.Parse(Console.ReadLine());
+            product.UnitsInStock = unitsInStock;
+            Console.WriteLine("Enter the Units on Order: ");
+            Int16 unitsOnOrder = Int16.Parse(Console.ReadLine());
+            product.UnitsOnOrder = unitsOnOrder;
+            Console.WriteLine("Enter the reorder level: ");
+            Int16 reorderLevel = Int16.Parse(Console.ReadLine());
+            product.ReorderLevel = reorderLevel;
+            Console.WriteLine("Enter if Discontinued Y/N");
+            string discontinuedProduct = Console.ReadLine().ToLower();
+
+            //If everything is true, it returns the entered category. If not, it returns the error message
+            if (product.ProductName != null && product.QuantityPerUnit != null)
+            {
+                return product;
+            }
+            else
+            {
+                logger.Error("Name and Description cannot be empty, must have entry for both");
+            }
+            return null;
+        }
+
+        //Case 4
         public static void displayActiveProducts(Logger logger)
         {
             logger.Info("Choice: Display Active Products");

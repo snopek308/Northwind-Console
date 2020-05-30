@@ -39,12 +39,14 @@ namespace NorthwindConsole.Models
 
             var isValid = Validator.TryValidateObject(category, context, results, true);
 
+            //This is an if statement in case the Category already exists
             if (db.Categories.Any(c => c.CategoryName.ToLower().Equals(category.CategoryName.ToLower())))
             {
                 isValid = false;
                 results.Add(new ValidationResult("Category already exists", new string[] { category.CategoryName }));
             }
 
+            //This is if the Category is a new one, it passes the validation and adds the Category
             if (isValid)
             {
                 logger.Info("Validation Passed");
@@ -66,6 +68,8 @@ namespace NorthwindConsole.Models
         //Case 7
         public static Category GetCategory(NorthwindContext db, Logger logger)
         {
+            //This is searching through to get the Category IDs
+            //And using the foreach, it displays the CategoryID and the CategoryName
             var categories = db.Categories.OrderBy(c => c.CategoryId);
             foreach (Category c in categories)
             {
@@ -73,6 +77,7 @@ namespace NorthwindConsole.Models
             }
             if (int.TryParse(Console.ReadLine(), out int CategoryId))
             {
+                //This is checking that the CategoryID is true, then it returns to the category searched
                 Category category = db.Categories.FirstOrDefault(c => c.CategoryId == CategoryId);
                 if (category != null)
                 {
@@ -85,12 +90,13 @@ namespace NorthwindConsole.Models
 
         public static Category InputCategory(NorthwindContext db, Logger logger)
         {
+            //This method is entering the new information in for the Category and the Description for the Category
             Category category = new Category();
             Console.WriteLine("Enter Category Name: ");
             category.CategoryName = Console.ReadLine();
             Console.WriteLine("Enter Description: ");
             category.Description = Console.ReadLine();
-
+            //If everything is true, it returns the entered category. If not, it returns the error message
             if (category.CategoryName != null && category.Description != null)
             {
                 return category;
@@ -106,6 +112,8 @@ namespace NorthwindConsole.Models
         //Case 8
         public static void displayAllCategories(Logger logger)
         {
+            //This method is searching through the Context, and pulling the categories and descriptions through the
+            //foreach (best thing EVER).
             logger.Info("Choice: Display All Categories");
             Console.WriteLine();
             var db = new NorthwindContext();
@@ -130,6 +138,8 @@ namespace NorthwindConsole.Models
             Console.WriteLine();
             var db = new NorthwindContext();
 
+            //So this I really had to research, because its been a summer since I've taking database. This is joining tables
+            //and pulling out the information I need to see the not discontinued categories
             var categories = (from p in db.Products
                               join c in db.Categories
                               on p.CategoryId equals c.CategoryId
@@ -143,6 +153,7 @@ namespace NorthwindConsole.Models
                                   p.ProductName
 
                               }).ToList();
+            //And then making a list of the CategoryIDs, the CategoryNames, and ProductNames
             foreach (var item in categories)
             {
                 Console.WriteLine($"{item.CategoryName}, {item.ProductName}");
@@ -162,12 +173,15 @@ namespace NorthwindConsole.Models
             Console.WriteLine("Enter Category ID to view products: ");
             var categories = db.Categories.OrderBy(c => c.CategoryId);
 
+            //
             foreach (var c in categories)
             {
                 Console.WriteLine($"{c.CategoryId}) {c.CategoryName}");
             }
             if (UInt32.TryParse(Console.ReadLine(), out UInt32 choice))
             {
+                //This is the same as above. I had to do a join of the tables to pull the information I needed to 
+                //display the specific categories and products
                 if (db.Categories.Any(c => c.CategoryId == choice))
                 {
                     var specificCategory = (from p in db.Products
@@ -179,7 +193,7 @@ namespace NorthwindConsole.Models
                                                 c.CategoryName,
                                                 p.ProductName
                                             }).ToList();
-
+                    //And I made of list that I would be able to return below
                     logger.Info($"({specificCategory.Count()}) results returned");
                     Console.WriteLine();
 

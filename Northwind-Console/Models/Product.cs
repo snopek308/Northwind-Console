@@ -36,6 +36,9 @@ namespace NorthwindConsole.Models
         public virtual Category Category { get; set; }
         public virtual Supplier Supplier { get; set; }
 
+
+        //Methods for Switch Products
+
         //Case 1
         public static void addProducts(Logger logger)
         {
@@ -63,6 +66,7 @@ namespace NorthwindConsole.Models
             string discontinuedProduct = Console.ReadLine().ToLower();
             bool discontinued;
 
+            //This is taking care of if the product is discountinued or not
             if (discontinuedProduct != null && discontinuedProduct.Equals("y") || discontinuedProduct.Equals("n"))
             {
                 if (discontinuedProduct.Equals("y"))
@@ -76,6 +80,7 @@ namespace NorthwindConsole.Models
                     product.Discontinued = discontinued;
                 }
 
+                //this is assigning the product to a category
                 Console.WriteLine("Enter Category Name: ");
                 var categoryName = Console.ReadLine().ToLower();
                 var categoryQuery = db.Categories.Where(c => c.CategoryName.Equals(categoryName));
@@ -86,6 +91,7 @@ namespace NorthwindConsole.Models
                     categoryID = ca.CategoryId;
                 }
 
+                //this is assigning the product to a supplier
                 product.CategoryId = categoryID;
                 Console.WriteLine("Enter Supplier name: ");
                 var supplierName = Console.ReadLine();
@@ -135,10 +141,12 @@ namespace NorthwindConsole.Models
         //Case 2
         public static void displayAllProducts(Logger logger)
         {
+            //This is just querying through all the products and ordering them by their ProductID
             logger.Info("Choice: Display all Products");
             var db = new NorthwindContext();
             var queryProduct = db.Products.OrderBy(p => p.ProductID);
             logger.Info(queryProduct.Count());
+            //I love foreach's now. this is going through the var queryProduct and writing out all the Product Name's in it
             foreach (var p in queryProduct)
             {
                 Console.WriteLine($"{p.ProductName}");
@@ -154,8 +162,9 @@ namespace NorthwindConsole.Models
             logger.Info("Choice: Display Active Products");
             var db = new NorthwindContext();
 
+            //This is looking through all the products and looking for when Discontinued is equal to false, and then displaying
+            //those products bc they are active
             Console.WriteLine("All Active Products:");
-
             var ProductQuery = db.Products.Where(p => p.Discontinued == false);
             foreach (var p in ProductQuery)
             {
@@ -173,7 +182,8 @@ namespace NorthwindConsole.Models
             var db = new NorthwindContext();
 
             Console.WriteLine("Discontinued Products:");
-
+            //This is just the opposite search of above, where we are looking for where Discontinued is true, and 
+            //displaying those products
             var ProductQuery = db.Products.Where(p => p.Discontinued == true);
             foreach (var p in ProductQuery)
             {
@@ -193,6 +203,8 @@ namespace NorthwindConsole.Models
             string name = Console.ReadLine().ToLower();
             logger.Info($"User search for {name.ToUpper()}");
 
+            //When searching Products, this is looking for the matching name and if any match, the foreach
+            //cycles through and displays all the information about the product
             var ProductSearch = db.Products.Where(p => p.ProductName.Equals(name));
             if (ProductSearch.Any())
             {
@@ -219,6 +231,7 @@ namespace NorthwindConsole.Models
                     Console.WriteLine();
                 }
             }
+            //if the entered product matches another, it will display the following Console.WriteLine
             else
             {
                 Console.WriteLine($"There were {ProductSearch.Count()} products that matched \"{name.ToUpper()}\"");
@@ -231,6 +244,7 @@ namespace NorthwindConsole.Models
         //Case 12
         public static Product getProduct(NorthwindContext db, Logger logger)
         {
+            //This is searching for the Product ID, and then using the foreach, displaying any Product/ProductID that mataches
             var products = db.Products.OrderBy(c => c.ProductID);
             foreach (Product p in products)
             {

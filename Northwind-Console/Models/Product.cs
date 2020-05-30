@@ -42,12 +42,12 @@ namespace NorthwindConsole.Models
         //Case 1
         public static void addProducts(Logger logger)
         {
+            logger.Info("Choice: Add new Product");
             var db = new NorthwindContext();
             Product product = new Product();
-            logger.Info("Choice: Add new Product");
-            
+
             Console.WriteLine("Enter the Product name: ");
-            product.ProductName = Console.ReadLine().ToLower();
+            product.ProductName = Console.ReadLine();
             Console.WriteLine("Enter the Quantity per Unit: ");
             product.QuantityPerUnit = Console.ReadLine();
             Console.WriteLine("Enter the Unit Price: ");
@@ -245,10 +245,10 @@ namespace NorthwindConsole.Models
         public static Product getProduct(NorthwindContext db, Logger logger)
         {
             //This is searching for the Product ID, and then using the foreach, displaying any Product/ProductID that mataches
-            var products = db.Products.OrderBy(c => c.ProductID);
+            var products = db.Products.OrderBy(c => c.ProductName);
             foreach (Product p in products)
             {
-                Console.WriteLine($"ID:{p.CategoryId}) {p.ProductName}");
+                Console.WriteLine($"ID:{p.ProductID}) {p.ProductName}");
             }
 
             if (int.TryParse(Console.ReadLine(), out int ProductID))
@@ -261,7 +261,8 @@ namespace NorthwindConsole.Models
             }
             logger.Error("Invalid Product ID");
             return null;
-        }
 
+        }
     }
 }
+

@@ -26,7 +26,6 @@ namespace NorthwindConsole.Models
         {
             logger.Info("Choice: Add Category");
             var db = new NorthwindContext();
-
             Category category = new Category();
 
             Console.WriteLine("Enter Category Name: ");
